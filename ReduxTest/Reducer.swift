@@ -5,8 +5,8 @@
 //  Created by Yang Xu on 2021/7/8.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 struct Prism<Source, Target> {
     let embed: (Target) -> Source
@@ -59,6 +59,7 @@ struct Reducer<State, Action, Environment> {
         }
     }
 
+    /// 允许可选的State值
     func optional() -> Reducer<State?, Action, Environment> {
         .init { state, action, environment in
             if state != nil {
@@ -95,7 +96,9 @@ struct Reducer<State, Action, Environment> {
 import os.log
 
 extension Reducer {
-    func signpost(log: OSLog = OSLog(subsystem: "com.aaplab.food", category: "Reducer")) -> Reducer {
+    /// 性能调试输出，对于判断耗时的action，非常有帮助。使用Instrumens进行调试，创建空模版，添加os_signpost
+    /// https://everettjf.github.io/2018/08/13/os-signpost-tutorial/
+    func signpost(log: OSLog = OSLog(subsystem: "com.fatbobman.reduxTest", category: "Reducer")) -> Reducer {
         .init { state, action, environment in
             let actionString = String(reflecting: action)
             os_signpost(.event, log: log, name: "Action", "%{public}@", actionString)
@@ -106,7 +109,7 @@ extension Reducer {
         }
     }
 
-    func log(log: OSLog = OSLog(subsystem: "com.aaplab.food", category: "Reducer")) -> Reducer {
+    func log(log: OSLog = OSLog(subsystem: "com.fatbobman.reduxTest", category: "Reducer")) -> Reducer {
         .init { state, action, environment in
             os_log(.default, log: log, "Action %s", String(reflecting: action))
             let effect = self.reduce(&state, action, environment)

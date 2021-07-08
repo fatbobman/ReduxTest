@@ -24,14 +24,17 @@ struct RootStateRoot:View{
     @ObservedObject var store = rootStore
     @State var memoName = ""
     @State var itemName = ""
+    private var words:Binding<Array<String>> {
+        store.binding(for: \.words, toAction: {.setWords(words: $0)})
+    }
     var body:some View{
         print("main state update")
         return RootStateView(memo: store.state.memoState.memoName,
                              item: store.state.itemState.itemName,
                              memoName: $memoName,
                              itemName: $itemName,
-                             memoOnCommit: {store.send(action: .memoAction(action: .setMemo(name: memoName)))},
-                             itemOnCommit: {store.send(action: .itemAction(action: .setName(name: itemName)))})
+                             memoOnCommit: {store.send(.memoAction(action: .setMemo(name: memoName)))},
+                             itemOnCommit: {store.send(.itemAction(action: .setName(name: itemName)))})
     }
 }
 
@@ -58,7 +61,7 @@ struct ItemRoot:View{
     @State private var itemName = ""
     var body: some View{
         print("item state update")
-        return ItemView(itemName: $itemName, item: store.state.itemName,onCommit: {store.send(action: .setName(name: itemName))})
+        return ItemView(itemName: $itemName, item: store.state.itemName,onCommit: {store.send(.setName(name: itemName))})
     }
 }
 
@@ -81,7 +84,7 @@ struct MemoRoot:View{
         print("memo state update")
         return
             VStack{
-                MemoView(memoName: store.state.memoName, name: $memoName, onCommit: {store.send(action: .setMemo(name: memoName))})
+                MemoView(memoName: store.state.memoName, name: $memoName, onCommit: {store.send(.setMemo(name: memoName))})
             }
     }
 }
