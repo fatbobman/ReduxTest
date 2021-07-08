@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct ReduxTestApp: App {
+    // 保证唯一性，且方便定义派生Store
     static let mainStore = Store(intialState: AppState(words: []), enivronment: AppEnvironment.share,reducer:appReducer)
     var body: some Scene {
         WindowGroup {
@@ -17,15 +18,4 @@ struct ReduxTestApp: App {
     }
 }
 
-typealias MyApp = ReduxTestApp
 
-let rootStore = MyApp.mainStore
-let itemStore = MyApp.mainStore.derived(derivedState: \.itemState, embedAction: AppAction.itemAction)
-let memoStore = MyApp.mainStore.derived(derivedState: \.memoState, embedAction: AppAction.memoAction)
-let otherStore = MyApp.mainStore.derived(derivedState: { appstore -> OtherState in
-    return OtherState(words: appstore.words)
-})
-
-struct OtherState:Equatable{
-    var words:[String]
-}

@@ -24,9 +24,6 @@ struct RootStateRoot:View{
     @ObservedObject var store = rootStore
     @State var memoName = ""
     @State var itemName = ""
-    private var words:Binding<Array<String>> {
-        store.binding(for: \.words, toAction: {.setWords(words: $0)})
-    }
     var body:some View{
         print("main state update")
         return RootStateView(memo: store.state.memoState.memoName,

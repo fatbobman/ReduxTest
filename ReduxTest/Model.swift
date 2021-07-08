@@ -80,3 +80,19 @@ let memoReducer: Reducer<MemoState, MemoAction, AppEnvironment> = Reducer { stat
     }
     return Empty(completeImmediately: true).eraseToAnyPublisher()
 }
+
+//方便项目改名称
+typealias MyApp = ReduxTestApp
+
+
+let rootStore = MyApp.mainStore
+let itemStore = MyApp.mainStore.derived(derivedState: \.itemState, embedAction: AppAction.itemAction)
+let memoStore = MyApp.mainStore.derived(derivedState: \.memoState, embedAction: AppAction.memoAction)
+
+let otherStore = MyApp.mainStore.derived(derivedState: { appstore -> OtherState in
+    return OtherState(words: appstore.words)
+})
+
+struct OtherState:Equatable{
+    var words:[String]
+}
