@@ -45,66 +45,79 @@ struct AppEnvironment{
     }
 }
 
-typealias Reducer<State,Action,Environment> = (inout State,Action,Environment) -> AnyPublisher<Action,Never>?
+//typealias Reducer<State,Action,Environment> = (inout State,Action,Environment) -> AnyPublisher<Action,Never>?
 
-func appReducer(state:inout AppState,action:AppAction,environment:AppEnvironment) -> AnyPublisher<AppAction,Never>?{
+let appReducer:Reducer<AppState,AppAction,AppEnvironment> = Reducer{ state,action,environment in
     switch action{
         case .qureyWords(let qurey):
             return environment.getWords(qurey: qurey)
         case .setWords(let words):
             state.words = words
         case .itemAction(let itemAction):
-            guard let effect = itemReducer(state: &state.itemState, action: itemAction,environment: environment) else {return nil}
+            let effect = itemReducer(&state.itemState, itemAction,environment)
             return effect
                 .map(AppAction.itemAction)
                 .eraseToAnyPublisher()
         case .memoAction(let memoAction):
-            guard let effect = memoReducer(state: &state.memoState,action:memoAction,environment: environment) else {return nil}
+            let effect = memoReducer(&state.memoState,memoAction,environment)
             return effect
                 .map(AppAction.memoAction)
                 .eraseToAnyPublisher()
     }
-    return nil
+    return Empty(completeImmediately: true).eraseToAnyPublisher()
 }
 
 
-
-func itemReducer(state:inout ItemState,action:ItemAction,environment:AppEnvironment) -> AnyPublisher<ItemAction,Never>?{
+let itemReducer:Reducer<ItemState,ItemAction,AppEnvironment> = Reducer{ state,action,environment in
     switch action{
         case .setName(let name):
             state.itemName = name
     }
-    return nil
+    return Empty(completeImmediately: true).eraseToAnyPublisher()
 }
 
-func memoReducer(state:inout MemoState,action:MemoAction,environment:AppEnvironment) -> AnyPublisher<MemoAction,Never>?{
+let memoReducer:Reducer<MemoState,MemoAction,AppEnvironment> = Reducer{ state,action,environment in
     switch action{
         case .setMemo(let name):
             state.memoName = name
     }
-    return nil
+    return Empty(completeImmediately: true).eraseToAnyPublisher()
 }
 
 class Store<State,Action,Environment>:ObservableObject{
-    init(intialState:State, enivronment: Environment, reducer: @escaping Reducer<State, Action, Environment>) {
+    init(intialState:State, enivronment: Environment, reducer: Reducer<State, Action, Environment>,subscriptionQueue:DispatchQueue = .init(label: "com.fatbobman.reduxtest")) {
         self.state = intialState
         self.environment = enivronment
         self.reducer = reducer
+        self.queue = subscriptionQueue
     }
 
     @Published private(set) var state:State
     private let environment:Environment
     private let reducer:Reducer<State,Action,Environment>
-    private var cancllables:Set<AnyCancellable> = []
+    private var cancllables:[UUID:AnyCancellable] = [:]
+    private let queue: DispatchQueue
 
     func send(action:Action) {
-        guard let effect = reducer(&state,action,environment) else {return}
-        effect
+        let effect = reducer(&state,action,environment)
+        var didComplete = false
+        let uuid = UUID()
+
+        let cancellable = effect
+            .subscribe(on: queue)
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: {
-                self.send(action: $0)
+            .sink(
+                receiveCompletion:{ [weak self] _ in
+                    didComplete = true
+                    self?.cancllables[uuid] = nil
+                },
+                receiveValue: { [weak self] in
+                self?.send(action: $0)
             })
-            .store(in: &cancllables)
+
+        if !didComplete {
+            cancllables[uuid] = cancellable
+        }
     }
 
     func derived<DerivedState:Equatable,ExractedAction>(
@@ -114,7 +127,7 @@ class Store<State,Action,Environment>:ObservableObject{
         let store = Store<DerivedState,ExractedAction,Environment>(
             intialState: derivedState(state),
             enivronment: environment,
-            reducer: { _,action,_ in
+            reducer: Reducer{ _,action,_ in
                 self.send(action: embedAction(action))
                 return Empty().eraseToAnyPublisher()
             }

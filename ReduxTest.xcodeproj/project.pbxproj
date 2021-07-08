@@ -12,6 +12,7 @@
 		76CAA87526957B0900FA9531 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76CAA87426957B0900FA9531 /* Assets.xcassets */; };
 		76CAA87826957B0900FA9531 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76CAA87726957B0900FA9531 /* Preview Assets.xcassets */; };
 		76CAA8822695AE3500FA9531 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CAA8812695AE3500FA9531 /* Model.swift */; };
+		76CAA8872696CA0900FA9531 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CAA8862696CA0900FA9531 /* Reducer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		76CAA87726957B0900FA9531 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		76CAA87926957B0900FA9531 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		76CAA8812695AE3500FA9531 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		76CAA8862696CA0900FA9531 /* Reducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reducer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 				76CAA87026957B0700FA9531 /* ReduxTestApp.swift */,
 				76CAA87226957B0700FA9531 /* ContentView.swift */,
 				76CAA8812695AE3500FA9531 /* Model.swift */,
+				76CAA8862696CA0900FA9531 /* Reducer.swift */,
 				76CAA87426957B0900FA9531 /* Assets.xcassets */,
 				76CAA87926957B0900FA9531 /* Info.plist */,
 				76CAA87626957B0900FA9531 /* Preview Content */,
@@ -143,6 +146,7 @@
 			files = (
 				76CAA8822695AE3500FA9531 /* Model.swift in Sources */,
 				76CAA87326957B0700FA9531 /* ContentView.swift in Sources */,
+				76CAA8872696CA0900FA9531 /* Reducer.swift in Sources */,
 				76CAA87126957B0700FA9531 /* ReduxTestApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
