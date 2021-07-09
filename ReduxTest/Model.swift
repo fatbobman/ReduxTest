@@ -10,6 +10,7 @@ import Foundation
 
 struct AppState: Equatable {
     var words: [String] = []
+    var name: String = ""
     var itemState = ItemState(itemName: "")
     var memoState = MemoState(memoName: "")
 }
@@ -84,15 +85,16 @@ let memoReducer: Reducer<MemoState, MemoAction, AppEnvironment> = Reducer { stat
 //方便项目改名称
 typealias MyApp = ReduxTestApp
 
-
 let rootStore = MyApp.mainStore
 let itemStore = MyApp.mainStore.derived(derivedState: \.itemState, embedAction: AppAction.itemAction)
 let memoStore = MyApp.mainStore.derived(derivedState: \.memoState, embedAction: AppAction.memoAction)
 
-let otherStore = MyApp.mainStore.derived(derivedState: { appstore -> OtherState in
-    return OtherState(words: appstore.words)
+// For Test, Can mix any state value in a new state struct
+let otherStore = MyApp.mainStore.derived(derivedState: { appstate -> OtherState in
+    return OtherState(words: appstate.words,name:appstate.name)
 })
 
 struct OtherState:Equatable{
     var words:[String]
+    var name:String
 }
