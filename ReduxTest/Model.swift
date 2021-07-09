@@ -89,7 +89,7 @@ let rootStore = MyApp.mainStore
 let itemStore = MyApp.mainStore.derived(derivedState: \.itemState, embedAction: AppAction.itemAction)
 let memoStore = MyApp.mainStore.derived(derivedState: \.memoState, embedAction: AppAction.memoAction)
 
-// For Test, Can mix any state value in a new state struct
+// For Test, Can mix any state value in a new state struct 
 let otherStore = MyApp.mainStore.derived(derivedState: { appstate -> OtherState in
     return OtherState(words: appstate.words,name:appstate.name)
 })
